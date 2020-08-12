@@ -291,7 +291,52 @@ let Common = {
             param.push(key + '=' + encodeURIComponent(obj[key]));
         }
         return param.join('&');
-    }
+    },
+    /**
+     * 页面滚动js
+     * @param {*} options { x: ,y: ,duration: }
+     */
+    scrollTo: function (options) {
+        var x = options.x,
+            y = options.y,
+            duration = options.duration || 10,
+            html = document.documentElement,
+            body = document.body,
+            tl, type, current, direction, split, distance, _timer, _scroll;
+
+        if ('undefined' === typeof x && y >= 0) {
+            tl = html.scrollTop || body.scrollTop;
+            current = y;
+            type = 'y';
+        } else if ('undefined' === typeof y && x >= 0) {
+            tl = html.scrollLeft || body.scrollLeft;
+            current = x;
+            type = 'x';
+        } else {
+            return;
+        }
+
+        if (current === tl) return;
+
+        direction = current - tl > 0 ? 1 : -1;
+        distance = Math.abs(current - tl);
+        split = distance / 50;
+        split *= direction;
+        _scroll = function(tl) {
+            'x' === type ? window.scrollTo(tl, 0) : window.scrollTo(0, tl);
+        }
+        _timer = setInterval(function () {
+            tl += split;
+            distance -= Math.abs(split);
+            if (distance <= 0) {
+                _scroll(current);
+                clearInterval(_timer);
+                _timer = null;
+            } else {
+                _scroll(tl);
+            }
+        }, duration)
+    },
 };
 
 module.exports = Common;
