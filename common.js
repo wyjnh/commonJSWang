@@ -153,6 +153,145 @@ let Common = {
         }
         return 'unknown';
     },
+    /**
+     * 判断ie浏览器
+     * @param {*} ua 
+     */
+    IeJudge() {
+        // 在首页、ie、pad版qq浏览器 保留fixIE
+        let ua = window.navigator.userAgent;
+        let isIe = false;
+        if((document.documentMode || +(ua.match(/MSIE (\d+)/) && RegExp.$1))){
+            isIe = true;
+        }
+        return isIe;
+    },
+    /**
+     * 兼容ie删除节点
+     * @param {*} _element 
+     */
+    removeElement(_element) {
+        var _parentElement = _element.parentNode;
+        if (_parentElement) {
+            _parentElement.removeChild(_element);
+        }
+    },
+    /**
+     * 判断终端类型
+     */
+    terminalJudge() {
+        //判断是否手机端访问 ua移动端走wap pc和ipad根据宽度判断
+        var userAgentInfo = window.navigator.userAgent.toLowerCase();
+        let reg = RegExp(/iphone|symbianos|android|windows phone|ipod/);
+        if (userAgentInfo.match(reg)) {
+            return 'wap';
+        } else if (window.innerWidth <= 820) {
+            return 'wap';
+        } else {
+            return 'web';
+        }
+    },
+    /**
+     * 返回节点所有父节点class
+     * @param {*} startTag 节点
+     * @param {*} parentTagList 父节点class数组
+     */
+    getParentTag(startTag, parentTagList = []) {
+        // 传入标签是否是DOM对象
+        if (!(startTag instanceof HTMLElement)) return console.error('receive only HTMLElement');
+        // 父级标签是否是body,是着停止返回集合,反之继续
+        if (startTag.parentElement && 'BODY' !== startTag.parentElement.nodeName) {
+            // 放入集合
+            parentTagList.push(startTag.parentElement.className);
+            // 再上一层寻找
+            return Common.getParentTag(startTag.parentElement, parentTagList);
+        }
+        // 返回集合,结束
+        else return parentTagList;
+    },
+    /**
+     * 插入js
+     * @param {*} url 
+     */
+    appendPassportJs(url) {
+        var script = document.createElement('script');
+        script.id = 'passport';
+        script.type = 'text/javascript';
+        script.src = url;
+        document.body.appendChild(script);
+    },
+    /**
+     * 获取页面内的选择文本
+     */
+    getSelection() {
+        let selection = '';
+        if (window.getSelection) {
+            let activeElement = document.activeElement;
+            if (activeElement && (activeElement.nodeName === 'TEXTAREA' || activeElement.nodeName === 'INPUT')) {
+                selection = activeElement.value.substring(activeElement.selectionStart, activeElement.selectionEnd); // 针对 FireFox textarea input 的特殊处理
+            } else {
+                selection = window.getSelection(); // FireFox, Safari, Chrome
+            }
+        } else if (document.getSelection) {
+            selection = document.getSelection(); // IE10
+        } else if (document.selection) {
+            selection = document.selection.createRange().text; // IE6+10-
+        }
+        return selection
+            .toString()
+            .replace(/^\s+/g, '')
+            .replace(/\s+$/g, '');
+    },
+    /**
+     * 移除页面内的选择“记忆”
+     */
+    removeSelection() {
+        if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        } else if (document.getSelection && document.getSelection.empty) {
+            document.getSelection().empty();
+        } else if (document.selection && document.selection.empty) {
+            document.selection.empty();
+        }
+    },
+    /**
+     * 获取自定义属性 ie 兼容 dateSet
+     * @param {*} ele 
+     */
+    getDataset(ele) {
+        if (ele.dataset) {
+            return ele.dataset;
+        } else {
+            var attrs = ele.attributes, //元素的属性集合
+                dataset = {},
+                name,
+                matchStr;
+
+            for (var i = 0; i < attrs.length; i++) {
+                //是否是data- 开头
+                matchStr = attrs[i].name.match(/^data-(.+)/);
+                if (matchStr) {
+                    //data-auto-play 转成驼峰写法 autoPlay
+                    name = matchStr[1].replace(/-([\da-z])/gi, function(all, letter) {
+                        return letter.toUpperCase();
+                    });
+                    dataset[name] = attrs[i].value;
+                }
+            }
+            return dataset;
+        }
+    },
+    /**
+     * 把对象转成get请求参数形式
+     * @param {*} obj 
+     */
+    urlParams(obj) {
+        let param = [];
+        for (let key in obj) {
+            param.push(key + '=' + encodeURIComponent(obj[key]));
+        }
+        return param.join('&');
+    }
 };
 
 module.exports = Common;
