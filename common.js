@@ -337,6 +337,19 @@ let Common = {
             }
         }, duration)
     },
+    /**
+     * vue 多组件引用方法优化
+     */
+    importComponents(){
+        const path = require('path')
+        const files = require.context('@/components/home', false, /\.vue$/)
+        const modules = {}
+        files.keys().forEach(key => {
+        const name = path.basename(key, '.vue')
+        modules[name] = files(key).default || files(key)
+        })
+        components:modules
+    }
 };
 
 module.exports = Common;
