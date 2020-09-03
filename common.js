@@ -2,10 +2,9 @@ let Common = {
     /**
      * 语音播放
      * 页面创建audio元素播放指定音频 播放完后有回调函数
-     * @param {$event} 事件绑定节点
      * @param {src} MP3语音链接
      */
-    playVoice($event, src) {
+    playVoice(src) {
         Common.deleteVoice();
         let audio, source;
         audio = document.createElement('audio');
@@ -16,7 +15,6 @@ let Common = {
         source.src = src;
         audio.appendChild(source);
         document.body.appendChild(audio);
-        // Common.addClass($event.target, 'active');
         audio.play();
         audio.addEventListener(
             'ended',
@@ -37,11 +35,6 @@ let Common = {
         source.src = '';
         audio.removeChild(source);
         document.body.removeChild(audio);
-        // 样式置空
-        // let activeNodes = document.querySelectorAll('.active');
-        // for (let i = 0; i < activeNodes.length; i++) {
-        //     Common.removeClass(activeNodes[i], 'active');
-        // }
     },
     /**
      * 格式化时间获取
@@ -349,6 +342,23 @@ let Common = {
         modules[name] = files(key).default || files(key)
         })
         components:modules
+    },
+    /**
+     * 禁止蒙层底部页面跟随滚动
+     */
+    stopBodyScroll(isBan){
+        let bodyEl = document.body;
+        let top = 0;
+        if(isBan){
+            // 禁止滑动
+            top = window.scrollY;
+            bodyEl.style.position = 'fixed';
+            bodyEl.style.top = -top+'px';
+        }else{
+            bodyEl.style.position = "";
+            bodyEl.style.top = '';
+            window.scrollTo(0,top)
+        }
     }
 };
 
