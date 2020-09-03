@@ -24,7 +24,7 @@ let CommonArray = {
      */
     spliceArrList(list,size=1,resultArr=[]){
         let tmp = [...list];
-        if(size<=0){
+        if(size <= 0){
             return resultArr;
         }
         while(tmp.length){
