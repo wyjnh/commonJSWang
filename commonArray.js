@@ -99,7 +99,7 @@ let CommonArray = {
         return arrName.map((item,index)=>{
             return { name: item, age: arrAge[index],dec:arrDec[index]}
         })
-    }
+    },
     /**
      * 分割指定长度的元素数组
      * @param {*} list 
